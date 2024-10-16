@@ -1,11 +1,17 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
+import tkinter as tk
 import sqlite3
 
 root = Tk()
 root.title("Hệ thống quản lý sinh viên")
-root.geometry("1200x800")
+# Mở cửa sổ full màn hình
+root.state('zoomed')
+
+# khả năng thay đổi kích thước cửa sổ
+root.resizable(True, True)
+# root.geometry("1200x800")
 
 # # Kết nối tới db
 # conn = sqlite3.connect('Student_book.db')
@@ -108,8 +114,41 @@ def truy_van():
 
     # Ngat ket noi
     conn.close()
+
+def cap_nhat():
+    global record_id
+    if f_id_editor.get() != record_id:
+        messagebox.showerror("lỗi", "không được sửa ID")
+        return
+    conn = sqlite3.connect('Student_book.db')
+    c = conn.cursor()
+    record_id = f_id_editor.get()
+
+    c.execute("""UPDATE students SET
+           first_name = :first,
+           last_name = :last,
+           class_id = :class_id,
+           yearEnrolled = :yearEnrolled,
+           average_score = :average_score
+           WHERE id = :id""",
+              {
+                  'first': f_name_editor.get(),
+                  'last': l_name_editor.get(),
+                  'class_id': class_id_editor.get(),
+                  'yearEnrolled': yearEnrolled_editor.get(),
+                  'average_score': average_score_editor.get(),
+                  'id': record_id
+              })
+
+    conn.commit()
+    conn.close()
+    editor.destroy()
+
+    # Cập nhật lại danh sách bản ghi sau khi chỉnh sửa
+    truy_van()
+
 def chinh_sua():
-    global editor
+    global editor, record_id
     editor = Tk()
     editor.title('Cập nhật bản ghi')
     editor.geometry("400x300")
@@ -122,7 +161,7 @@ def chinh_sua():
 
     global f_id_editor, f_name_editor, l_name_editor, class_id_editor, yearEnrolled_editor, average_score_editor
     #Khung nhập dữ liệu
-    f_id_editor = Entry(editor, width=30)
+    f_id_editor = Entry(editor, width=30, state='normal')
     f_id_editor.grid(row=0, column=1, padx=20, pady=(10, 0))
     f_name_editor = Entry(editor, width=30)
     f_name_editor.grid(row=1, column=1, padx=20)
@@ -160,33 +199,7 @@ def chinh_sua():
     edit_btn = Button(editor, text="Lưu bản ghi", command=cap_nhat)
     edit_btn.grid(row=7, column=0, columnspan=2, pady=10, padx=10, ipadx=145)
 
-def cap_nhat():
-    conn = sqlite3.connect('Student_book.db')
-    c = conn.cursor()
-    record_id = f_id_editor.get()
 
-    c.execute("""UPDATE students SET
-           first_name = :first,
-           last_name = :last,
-           class_id = :class_id,
-           yearEnrolled = :yearEnrolled,
-           average_score = :average_score
-           WHERE id = :id""",
-              {
-                  'first': f_name_editor.get(),
-                  'last': l_name_editor.get(),
-                  'class_id': class_id_editor.get(),
-                  'yearEnrolled': yearEnrolled_editor.get(),
-                  'average_score': average_score_editor.get(),
-                  'id': record_id
-              })
-
-    conn.commit()
-    conn.close()
-    editor.destroy()
-
-    # Cập nhật lại danh sách bản ghi sau khi chỉnh sửa
-    truy_van()
 
 def chon(event):
     # Lấy thông tin bản ghi được chọn
