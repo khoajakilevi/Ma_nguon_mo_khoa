@@ -94,11 +94,11 @@ for i in range(70, 71):
 
 ######################################################
 # III. Lay thong tin cua tung hoa si
-count =0;
+count =0
 for link in all_links:
     if (count>3):
         break
-    count=count+1;
+    count=count+1
 
     print(link)
     try:

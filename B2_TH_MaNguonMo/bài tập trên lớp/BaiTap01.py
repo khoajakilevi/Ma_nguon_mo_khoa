@@ -7,7 +7,7 @@ driver = webdriver.Chrome()
 
 #mo trang web
 url = "https://en.wikipedia.org/wiki/List_of_painters_by_name"
-# url = "https://truyenqqto.com/"
+
 driver.get(url)
 
 #doi khoang chung 2s
